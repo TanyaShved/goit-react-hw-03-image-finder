@@ -1,26 +1,32 @@
 import { Component } from 'react';
 // import PropTypes from 'prop-types';
 import ImageGalleryItem from '../../components/ImageGalleryItem/ImageGalleryItem';
+import Button from '../../components/Button/Button';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import s from './ImageGallery.module.css';
 
 class ImageGallery extends Component {
   state = {
-    images: null,
+    images: [],
     error: null,
     status: `idle`,
+    page: 1,
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { images, error, status } = this.state;
     const { imageName, page } = this.props;
 
     const apiKey = '19013398-a980467a71ce13bd0d53bc132';
     const url = 'https://pixabay.com/api/';
 
     if (prevProps.imageName !== imageName) {
+      this.setState({ page: 1 });
+    }
+
+    if (prevProps.imageName !== imageName) {
       console.log('cheange image name');
+      console.log(this.state.images);
 
       this.setState({ status: `pending` });
 
@@ -36,11 +42,17 @@ class ImageGallery extends Component {
             new Error(`Нет галлереи с таким названием ${imageName}`),
           );
         })
-        // .then(console.log)
+
         .then(images => this.setState({ images, status: `resolved` }))
         .catch(error => this.setState({ error, status: `rejected` }));
     }
   }
+
+  onClickLoadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+  };
 
   render() {
     const { images, error, status } = this.state;
@@ -48,7 +60,6 @@ class ImageGallery extends Component {
     if (status === `idle`) {
       return <h1>Ввидите название</h1>;
     }
-
     if (status === `pending`) {
       return (
         <Loader
@@ -67,9 +78,12 @@ class ImageGallery extends Component {
 
     if (status === `resolved`) {
       return (
-        <ul className={s.ImageGallery}>
-          <ImageGalleryItem images={images.hits} />
-        </ul>
+        <>
+          <ul className={s.ImageGallery}>
+            <ImageGalleryItem images={images.hits} />
+          </ul>
+          <Button onClick={this.onClickLoadMore} />
+        </>
       );
     }
   }

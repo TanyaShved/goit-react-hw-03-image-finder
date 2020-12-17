@@ -1,50 +1,57 @@
 import { Component } from 'react';
 // import PropTypes from 'prop-types';
+import imagesAPI from '../../services/image-api';
 import ImageGalleryItem from '../../components/ImageGalleryItem/ImageGalleryItem';
 import Button from '../../components/Button/Button';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import s from './ImageGallery.module.css';
 
+const Status = {
+  IDLE: 'idle',
+  PENDING: 'pending',
+  RESOLVED: 'resolved',
+  REJECTED: 'rejected',
+};
+
 class ImageGallery extends Component {
   state = {
     images: [],
     error: null,
-    status: `idle`,
+    status: Status.IDLE,
     page: 1,
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { imageName, page } = this.props;
-
-    const apiKey = '19013398-a980467a71ce13bd0d53bc132';
-    const url = 'https://pixabay.com/api/';
+    const { imageName } = this.props;
+    const nextPage = this.state.page;
 
     if (prevProps.imageName !== imageName) {
       this.setState({ page: 1 });
     }
 
-    if (prevProps.imageName !== imageName) {
-      console.log('cheange image name');
-      console.log(this.state.images);
+    if (prevProps.imageName !== imageName || prevState.page !== nextPage) {
+      this.setState({ status: Status.PENDING });
 
-      this.setState({ status: `pending` });
-
-      fetch(
-        `${url}?q=${imageName}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`,
-      )
-        .then(response => {
-          if (response.ok) {
-            return response.json();
+      imagesAPI
+        .fetchImages(imageName, nextPage)
+        .then(images => {
+          if (images.hits.length !== 0 || nextPage !== 1) {
+            this.setState({
+              images: [...prevState.images, ...images.hits],
+              status: Status.RESOLVED,
+            });
+            window.scrollTo({
+              top: document.documentElement.scrollHeight,
+              behavior: 'smooth',
+            });
+            return;
           }
-
           return Promise.reject(
             new Error(`Нет галлереи с таким названием ${imageName}`),
           );
         })
-
-        .then(images => this.setState({ images, status: `resolved` }))
-        .catch(error => this.setState({ error, status: `rejected` }));
+        .catch(error => this.setState({ error, status: Status.REJECTED }));
     }
   }
 
@@ -57,30 +64,37 @@ class ImageGallery extends Component {
   render() {
     const { images, error, status } = this.state;
 
-    if (status === `idle`) {
+    if (status === Status.IDLE) {
       return <h1>Ввидите название</h1>;
     }
-    if (status === `pending`) {
+    if (status === Status.PENDING) {
       return (
         <Loader
           type="Bars"
           color="#00BFFF"
           height={100}
           width={100}
-          timeout={3000} //3 secs
+          timeout={3000}
         />
       );
     }
 
-    if (status === `rejected`) {
+    if (status === Status.REJECTED) {
       return <h1>{error.message}</h1>;
     }
 
-    if (status === `resolved`) {
+    if (status === Status.RESOLVED) {
       return (
         <>
           <ul className={s.ImageGallery}>
-            <ImageGalleryItem images={images.hits} />
+            {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+              <ImageGalleryItem
+                key={id}
+                webformatURL={webformatURL}
+                largeImageURL={largeImageURL}
+                tags={tags}
+              />
+            ))}
           </ul>
           <Button onClick={this.onClickLoadMore} />
         </>

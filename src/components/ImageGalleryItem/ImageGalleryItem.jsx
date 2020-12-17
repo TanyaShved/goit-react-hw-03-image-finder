@@ -9,7 +9,9 @@ class ImageGalleryItem extends Component {
   };
 
   static propTypes = {
-    images: PropTypes.array.isRequired,
+    webformatURL: PropTypes.string.isRequired,
+    largeImageURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
   };
 
   toggleModal = () => {
@@ -20,29 +22,25 @@ class ImageGalleryItem extends Component {
 
   render() {
     const { showModal } = this.state;
-    const { images } = this.props;
-    // console.log(webformatURL, largeImageURL)
+    const { webformatURL, largeImageURL, tags } = this.props;
 
     return (
       <>
-        {images.map(({ id, webformatURL, largeImageURL }) => (
-          <li key={id} className={s.ImageGalleryItem}>
-            <img
+        <li className={s.ImageGalleryItem}>
+          <img
+            onClick={this.toggleModal}
+            src={webformatURL}
+            alt={tags}
+            className={s.ImageGalleryItem_image}
+          />
+          {showModal && (
+            <Modal
               onClick={this.toggleModal}
-              src={webformatURL}
-              data-src={largeImageURL}
-              alt=""
-              className={s.ImageGalleryItem_image}
+              largeImageURL={largeImageURL}
+              alt={tags}
             />
-            {showModal && (
-              <Modal
-                onClick={this.toggleModal}
-                largeImageURL={largeImageURL}
-                alt=""
-              />
-            )}
-          </li>
-        ))}
+          )}
+        </li>
       </>
     );
   }

@@ -14,10 +14,11 @@ class App extends Component {
   };
 
   render() {
+    const { imageName, page } = this.state;
     return (
       <>
         <Searcbar onSubmit={this.hendelFormSubmit} />
-        <ImageGallery imageName={this.state.imageName} page={this.state.page} />
+        <ImageGallery imageName={imageName} page={page} />
         <ToastContainer position="top-center" />
       </>
     );

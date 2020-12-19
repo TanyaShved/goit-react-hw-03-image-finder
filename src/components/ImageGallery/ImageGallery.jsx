@@ -1,5 +1,5 @@
 import { Component } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import imagesAPI from '../../services/image-api';
 import ImageGalleryItem from '../../components/ImageGalleryItem/ImageGalleryItem';
 import Button from '../../components/Button/Button';
@@ -22,38 +22,52 @@ class ImageGallery extends Component {
     page: 1,
   };
 
+  static propTypes = {
+    imageName: PropTypes.string.isRequired,
+    page: PropTypes.number.isRequired,
+  };
+
   componentDidUpdate(prevProps, prevState) {
     const { imageName } = this.props;
     const nextPage = this.state.page;
 
     if (prevProps.imageName !== imageName) {
-      this.setState({ page: 1 });
+      this.setState({ images: [], page: 1 });
     }
 
     if (prevProps.imageName !== imageName || prevState.page !== nextPage) {
-      this.setState({ status: Status.PENDING });
+      // this.setState({ status: Status.PENDING });
+      this.fetchImageGallery();
+    }
+  }
 
-      imagesAPI
-        .fetchImages(imageName, nextPage)
-        .then(images => {
-          if (images.hits.length !== 0 || nextPage !== 1) {
-            this.setState({
-              images: [...prevState.images, ...images.hits],
-              status: Status.RESOLVED,
-            });
+  fetchImageGallery = () => {
+    const { imageName } = this.props;
+    const nextPage = this.state.page;
+
+    imagesAPI
+      .fetchImages(imageName, nextPage)
+      .then(images => {
+        if (images.hits.length !== 0) {
+          this.setState(prevState => ({
+            images: [...prevState.images, ...images.hits],
+            status: Status.RESOLVED,
+          }));
+
+          if (nextPage > 1) {
             window.scrollTo({
               top: document.documentElement.scrollHeight,
               behavior: 'smooth',
             });
-            return;
           }
-          return Promise.reject(
-            new Error(`Нет галлереи с таким названием ${imageName}`),
-          );
-        })
-        .catch(error => this.setState({ error, status: Status.REJECTED }));
-    }
-  }
+          return;
+        }
+        return Promise.reject(
+          new Error(`Нет галлереи с таким названием ${imageName}`),
+        );
+      })
+      .catch(error => this.setState({ error, status: Status.REJECTED }));
+  };
 
   onClickLoadMore = () => {
     this.setState(prevState => ({
@@ -63,10 +77,13 @@ class ImageGallery extends Component {
 
   render() {
     const { images, error, status } = this.state;
+    console.log(images);
+    console.log(this.state.page);
 
     if (status === Status.IDLE) {
       return <h1>Ввидите название</h1>;
     }
+
     if (status === Status.PENDING) {
       return (
         <Loader

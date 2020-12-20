@@ -6,7 +6,6 @@ import ImageGallery from './components/ImageGallery/ImageGallery';
 class App extends Component {
   state = {
     imageName: '',
-    page: 1,
   };
 
   hendelFormSubmit = imageName => {
@@ -14,11 +13,11 @@ class App extends Component {
   };
 
   render() {
-    const { imageName, page } = this.state;
+    const { imageName } = this.state;
     return (
       <>
         <Searcbar onSubmit={this.hendelFormSubmit} />
-        <ImageGallery imageName={imageName} page={page} />
+        <ImageGallery imageName={imageName} />
         <ToastContainer position="top-center" />
       </>
     );

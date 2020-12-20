@@ -24,7 +24,7 @@ class ImageGallery extends Component {
 
   static propTypes = {
     imageName: PropTypes.string.isRequired,
-    page: PropTypes.number.isRequired,
+    // page: PropTypes.number.isRequired,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -33,10 +33,12 @@ class ImageGallery extends Component {
 
     if (prevProps.imageName !== imageName) {
       this.setState({ images: [], page: 1 });
+      console.log(this.state.images);
+      console.log(this.state.page);
     }
 
     if (prevProps.imageName !== imageName || prevState.page !== nextPage) {
-      // this.setState({ status: Status.PENDING });
+      this.setState({ status: Status.PENDING });
       this.fetchImageGallery();
     }
   }
@@ -77,8 +79,6 @@ class ImageGallery extends Component {
 
   render() {
     const { images, error, status } = this.state;
-    console.log(images);
-    console.log(this.state.page);
 
     if (status === Status.IDLE) {
       return <h1>Ввидите название</h1>;

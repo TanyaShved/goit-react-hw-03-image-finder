@@ -7,7 +7,6 @@ import s from './Searcbar.module.css';
 class Searcbar extends Component {
   state = {
     imageName: '',
-    page: 1,
   };
 
   static propTypes = {
@@ -29,7 +28,7 @@ class Searcbar extends Component {
     }
 
     this.props.onSubmit(imageName);
-    this.setState({ imageName: '', page: 1 });
+    this.setState({ imageName: '' });
   };
 
   render() {

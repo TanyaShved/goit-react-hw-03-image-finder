@@ -24,31 +24,44 @@ class ImageGallery extends Component {
 
   static propTypes = {
     imageName: PropTypes.string.isRequired,
-    // page: PropTypes.number.isRequired,
+    onChangeImage: PropTypes.func.isRequired,
   };
+
+  componentDidMount() {
+    this.props.onChangeImage('');
+    console.log('первий рендер');
+  }
 
   componentDidUpdate(prevProps, prevState) {
     const { imageName } = this.props;
-    const nextPage = this.state.page;
+    const { page, images } = this.state;
 
     if (prevProps.imageName !== imageName) {
-      this.setState({ images: [], page: 1 });
-      console.log(this.state.images);
-      console.log(this.state.page);
+      if (page === 1) {
+        this.fetchImageGallery();
+      } else {
+        this.setState({ page: 1, status: Status.PENDING, images: [] });
+      }
     }
 
-    if (prevProps.imageName !== imageName || prevState.page !== nextPage) {
-      this.setState({ status: Status.PENDING });
+    if (prevState.page !== page) {
       this.fetchImageGallery();
+    }
+
+    if (prevState.images !== images) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
     }
   }
 
   fetchImageGallery = () => {
     const { imageName } = this.props;
-    const nextPage = this.state.page;
+    const { page } = this.state;
 
     imagesAPI
-      .fetchImages(imageName, nextPage)
+      .fetchImages(imageName, page)
       .then(images => {
         if (images.hits.length !== 0) {
           this.setState(prevState => ({
@@ -56,12 +69,6 @@ class ImageGallery extends Component {
             status: Status.RESOLVED,
           }));
 
-          if (nextPage > 1) {
-            window.scrollTo({
-              top: document.documentElement.scrollHeight,
-              behavior: 'smooth',
-            });
-          }
           return;
         }
         return Promise.reject(

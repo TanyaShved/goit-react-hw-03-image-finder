@@ -17,7 +17,10 @@ class App extends Component {
     return (
       <>
         <Searcbar onSubmit={this.hendelFormSubmit} />
-        <ImageGallery imageName={imageName} />
+        <ImageGallery
+          imageName={imageName}
+          onChangeImage={this.hendelFormSubmit}
+        />
         <ToastContainer position="top-center" />
       </>
     );

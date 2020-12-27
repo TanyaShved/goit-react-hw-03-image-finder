@@ -19,6 +19,7 @@ class Searcbar extends Component {
 
   hendelSubmit = e => {
     const { imageName } = this.state;
+
     e.preventDefault();
 
     // проверяем не пустой ли нам инпут

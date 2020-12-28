@@ -13,11 +13,11 @@ class Searcbar extends Component {
     onSubmit: PropTypes.func.isRequired,
   };
 
-  hendelNameChange = e => {
+  handelNameChange = e => {
     this.setState({ imageName: e.currentTarget.value.toLowerCase() });
   };
 
-  hendelSubmit = e => {
+  handelSubmit = e => {
     const { imageName } = this.state;
 
     e.preventDefault();
@@ -36,7 +36,7 @@ class Searcbar extends Component {
     const { imageName } = this.state;
     return (
       <header className={s.Searchbar}>
-        <form onSubmit={this.hendelSubmit} className={s.SearchForm}>
+        <form onSubmit={this.handelSubmit} className={s.SearchForm}>
           <button type="submit" className={s.SearchForm_button}>
             <span className={s.SearchForm_button_label}>Search</span>
           </button>
@@ -48,7 +48,7 @@ class Searcbar extends Component {
             autoFocus
             placeholder="Search images and photos"
             value={imageName}
-            onChange={this.hendelNameChange}
+            onChange={this.handelNameChange}
           />
         </form>
       </header>

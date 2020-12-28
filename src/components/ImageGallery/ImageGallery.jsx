@@ -24,13 +24,7 @@ class ImageGallery extends Component {
 
   static propTypes = {
     imageName: PropTypes.string.isRequired,
-    onChangeImage: PropTypes.func.isRequired,
   };
-
-  componentDidMount() {
-    this.props.onChangeImage('');
-    console.log('первий рендер');
-  }
 
   componentDidUpdate(prevProps, prevState) {
     const { imageName } = this.props;

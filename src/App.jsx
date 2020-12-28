@@ -8,7 +8,7 @@ class App extends Component {
     imageName: '',
   };
 
-  hendelFormSubmit = imageName => {
+  handelFormSubmit = imageName => {
     this.setState({ imageName });
   };
 
@@ -16,11 +16,8 @@ class App extends Component {
     const { imageName } = this.state;
     return (
       <>
-        <Searcbar onSubmit={this.hendelFormSubmit} />
-        <ImageGallery
-          imageName={imageName}
-          onChangeImage={this.hendelFormSubmit}
-        />
+        <Searcbar onSubmit={this.handelFormSubmit} />
+        <ImageGallery imageName={imageName} />
         <ToastContainer position="top-center" />
       </>
     );
